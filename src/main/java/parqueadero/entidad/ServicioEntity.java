@@ -31,8 +31,11 @@ public class ServicioEntity {
 	
 	private Date fechaSalida;
 	
+		
 	
-	
+	public ServicioEntity() {
+	}
+
 	public ServicioEntity(Long idServicio, String placa, String tipoVehiculo, Integer cilindraje, Date fechaIngreso,
 			Date fechaSalida, TarifaEntity tarifa) {
 		this.idServicio = idServicio;

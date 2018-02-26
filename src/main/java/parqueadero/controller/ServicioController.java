@@ -2,6 +2,7 @@ package parqueadero.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import parqueadero.dominio.Vigilante;
@@ -20,10 +21,10 @@ public class ServicioController {
     TarifaRepositorio tarifaRepositorio;
 	
     //Get All
-	@GetMapping("/notes")
-    public String consultarTarifa(ServicioEntity servicioEntity) {
+	@GetMapping("/notes/{placa}")
+    public String consultarTarifa(@PathVariable(value = "placa") String placa) {
 		Vigilante vigilante = new Vigilante(this.servicioRepositoro, this.tarifaRepositorio);
-		return vigilante.ingresarVehiculo(servicioEntity);
+		return vigilante.facturarServicio(placa);
     }
 
 }

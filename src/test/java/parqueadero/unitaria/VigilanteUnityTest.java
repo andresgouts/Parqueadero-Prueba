@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -143,6 +144,19 @@ public class VigilanteUnityTest {
 		
 		//assert
 		assertFalse(restriccion);
+	}
+	
+	@Test
+	public void calcularTiempoMinutosTest()  {
+		//Arrange
+		Date fechaInicio = new Date(2018, 2, 01, 0, 0);
+		Date fechaFin = new Date(2018, 2, 02, 8, 15);
+		
+		//Act
+		List<Long> tiempoServicio = vigilante.calcularTiempoServicio(fechaInicio, fechaFin);
+		
+		//assert
+		assertNotNull(tiempoServicio);
 	}
 
 }

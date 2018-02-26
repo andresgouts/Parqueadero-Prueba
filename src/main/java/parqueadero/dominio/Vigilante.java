@@ -1,13 +1,15 @@
 package parqueadero.dominio;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 
 import parqueadero.entidad.ServicioEntity;
 import parqueadero.entidad.TarifaEntity;
@@ -24,8 +26,13 @@ public class Vigilante {
 	private static final String MEMSAJE_RESTRINGIDO = "Este vehiculo tiene restriccion de ingreso";
 	private static final String MEMSAJE_GUARDADO_EXITOSO = "Se ha registrado el ingreso exitosamente";
 	private static final String MEMSAJE_GUARDADO_ERROR = "Se ha presentado un error durante el guardado";
-	private static final String tipoCarro = "c";
-	private static final String tipoMoto = "m";
+	private static final String MEMSAJE_NO_EXISTE_VEHICULO = "No se ha encontrado un vehiculo estacionado con esa placa";
+	private static final Integer CILINDRAJE_COBRO_EXTRA = 500;
+	private static final Double VALOR_COBRO_EXTRA = 2000D;
+	private static final Long MINUTOS_DE_UNA_HORA = 60L;
+	private static final Long MINUTOS_DEL_DIA = 1440L;
+	private static final String TIPO_VEHIUCLO_CARRO = "c";
+	private static final String TIPO_VEHICULO_MOTO = "m";
 	
 	@Autowired
 	ServicioRepositorio servicioRepositorio;
@@ -65,7 +72,7 @@ public class Vigilante {
 	
 	public Boolean hayCupo(String tipoVehiculo) {
 		Long camposOcupados = servicioRepositorio.countByFechaSalidaAndTipoVehiculo(null, tipoVehiculo);
-		if (tipoVehiculo.equals(tipoCarro)) {
+		if (tipoVehiculo.equals(TIPO_VEHIUCLO_CARRO)) {
 			if (camposOcupados < CAPACIDAD_CARROS) {
 				return true;
 			}
@@ -78,7 +85,7 @@ public class Vigilante {
 	}
 	
 	public Boolean tieneRestriccion (ServicioEntity servicio) {
-		if (servicio.getPlaca().charAt(0) == LETRA_RESTRICCION && servicio.getTipoVehiculo().equals(tipoCarro)) {
+		if (servicio.getPlaca().charAt(0) == LETRA_RESTRICCION && servicio.getTipoVehiculo().equals(TIPO_VEHIUCLO_CARRO)) {
 			Calendar calendario = new GregorianCalendar();
 			calendario.setTime(servicio.getFechaIngreso());
 			if(calendario.get(Calendar.DAY_OF_WEEK) > 2) {
@@ -93,6 +100,81 @@ public class Vigilante {
 		tarifa = tarifaRepositorio.findByTipoVehiculo(tipoVehiculo);
 		return tarifa;
 	}
+	
+	public String facturarServicio(String placa) {
+		LocalDateTime fechaSalida = LocalDateTime.now();
+		ServicioEntity servicio = buscarServicioActivo(placa);
+		Double valorExtras = 0D;
+		if (servicio == null) {
+			return MEMSAJE_NO_EXISTE_VEHICULO;
+		}
+		servicio.setFechaSalida(Date.from(fechaSalida.atZone(ZoneId.systemDefault()).toInstant()));
+		
+		List<Long> diasHorasDeServicio = calcularTiempoServicio(servicio.getFechaIngreso(), servicio.getFechaSalida());
+		Double valorSubtotal = calcularSubtotalFactura(diasHorasDeServicio, servicio.getTipoVehiculo());
+		
+		
+		if (servicio.getTipoVehiculo().equals(TIPO_VEHICULO_MOTO) && servicio.getCilindraje()>CILINDRAJE_COBRO_EXTRA) {
+			valorExtras = VALOR_COBRO_EXTRA;			
+		}
+		
+		Double total = valorSubtotal + valorExtras;
+		
+		return "El valor del subtotal es de " + valorSubtotal.toString() + " El valor de los Extras es de " + valorExtras.toString() + 
+				"Para un total de " + total;
+	}
+	
+	public ServicioEntity buscarServicioActivo(String placa) {
+		return servicioRepositorio.findByPlacaAndFechaSalida(placa, null);
+	}
+	
+	public List<Long> calcularTiempoServicio(Date inicio, Date fin) {
+		List<Long> diasHoras = new ArrayList<>();
+		Long cantidadDias;
+		Long cantidadHoras;
+		LocalDateTime fechaIinicio = LocalDateTime.ofInstant(inicio.toInstant(), ZoneId.systemDefault());
+		LocalDateTime fechaFin = LocalDateTime.ofInstant(fin.toInstant(), ZoneId.systemDefault());		
+		Duration diferencia = Duration.between(fechaIinicio, fechaFin);
+		Long diferenciaEnMinutos = diferencia.getSeconds()/MINUTOS_DE_UNA_HORA;
+		cantidadDias = diferenciaEnMinutos/MINUTOS_DEL_DIA;
+		if (cantidadDias > 0) {
+			diferenciaEnMinutos = diferenciaEnMinutos - (cantidadDias * MINUTOS_DEL_DIA);
+		}
+		cantidadHoras = diferenciaEnMinutos/MINUTOS_DE_UNA_HORA;
+		if(cantidadHoras > 0) {
+			if (cantidadHoras >= 9 && cantidadHoras <= 24) {
+				cantidadDias = cantidadDias + 1L;
+				diferenciaEnMinutos = diferenciaEnMinutos - (cantidadHoras * MINUTOS_DE_UNA_HORA);
+				cantidadHoras = 0L;
+				
+			}else {
+				diferenciaEnMinutos = diferenciaEnMinutos - (cantidadHoras * MINUTOS_DE_UNA_HORA);
+				if(diferenciaEnMinutos > 0 && diferenciaEnMinutos <= MINUTOS_DE_UNA_HORA) {
+					cantidadHoras = cantidadHoras + 1L;
+				}
+			}
+			
+		}
+		
+		
+		
+		diasHoras.add(cantidadDias);
+		diasHoras.add(cantidadHoras);
+		
+		return diasHoras;
+		
+	}
+	
+	public Double calcularSubtotalFactura(List<Long> totalDiasHoras, String tipoVehiculo) {
+		TarifaEntity tarifa = tarifaRepositorio.findByTipoVehiculo(tipoVehiculo);
+		double valorTotal = totalDiasHoras.get(0) * tarifa.getValorDia();
+		valorTotal = valorTotal + (totalDiasHoras.get(1) * tarifa.getValorDia());
+		return valorTotal;
+		
+	}
+	
+	
+	
 	
 
 }
