@@ -4,8 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import parqueadero.databuilder.ServicioDataBuilder;
 import parqueadero.dominio.Vigilante;
 import parqueadero.entidad.ServicioEntity;
 import parqueadero.repositorio.ServicioRepositorio;
@@ -23,9 +21,7 @@ public class ServicioController {
 	
     //Get All
 	@GetMapping("/notes")
-    public String consultarTarifa() {
-		ServicioDataBuilder servicioDataBuilder = new ServicioDataBuilder();
-		ServicioEntity servicioEntity = servicioDataBuilder.build();
+    public String consultarTarifa(ServicioEntity servicioEntity) {
 		Vigilante vigilante = new Vigilante(this.servicioRepositoro, this.tarifaRepositorio);
 		return vigilante.ingresarVehiculo(servicioEntity);
     }
