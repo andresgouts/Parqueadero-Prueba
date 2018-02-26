@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import parqueadero.entidad.FacturaEntity;
 import parqueadero.entidad.ServicioEntity;
 import parqueadero.entidad.TarifaEntity;
 import parqueadero.repositorio.ServicioRepositorio;
@@ -60,6 +61,7 @@ public class Vigilante {
 		if(tarifa == null) {
 			return MEMSAJE_SIN_TARIFA; 
 		}
+		
 		servicio.setTarifa(tarifa);
 		ServicioEntity servicioGuardado = servicioRepositorio.save(servicio);
 		if(servicioGuardado==null) {
@@ -102,6 +104,7 @@ public class Vigilante {
 	}
 	
 	public String facturarServicio(String placa) {
+		FacturaEntity factura = new FacturaEntity();
 		LocalDateTime fechaSalida = LocalDateTime.now();
 		ServicioEntity servicio = buscarServicioActivo(placa);
 		Double valorExtras = 0D;
@@ -120,8 +123,16 @@ public class Vigilante {
 		
 		Double total = valorSubtotal + valorExtras;
 		
+		factura.setServicio(servicio);
+		factura.setDiasfacturados(diasHorasDeServicio.get(0));
+		factura.setHorasFacturadas(diasHorasDeServicio.get(1));
+		factura.setSubtotal(valorSubtotal);
+		factura.setValorOtrosConceptos(valorExtras);
+		factura.setTotalFactura(total);
+		
+		
 		return "El valor del subtotal es de " + valorSubtotal.toString() + " El valor de los Extras es de " + valorExtras.toString() + 
-				"Para un total de " + total;
+				"Para un total de " + total;		
 	}
 	
 	public ServicioEntity buscarServicioActivo(String placa) {
@@ -155,8 +166,6 @@ public class Vigilante {
 			}
 			
 		}
-		
-		
 		
 		diasHoras.add(cantidadDias);
 		diasHoras.add(cantidadHoras);
