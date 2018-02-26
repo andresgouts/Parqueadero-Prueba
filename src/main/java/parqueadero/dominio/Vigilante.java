@@ -1,5 +1,7 @@
 package parqueadero.dominio;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -22,10 +24,8 @@ public class Vigilante {
 	private static final String MEMSAJE_RESTRINGIDO = "Este vehiculo tiene restriccion de ingreso";
 	private static final String MEMSAJE_GUARDADO_EXITOSO = "Se ha registrado el ingreso exitosamente";
 	private static final String MEMSAJE_GUARDADO_ERROR = "Se ha presentado un error durante el guardado";
-	@Value("${application.tipovehiculo.carro}")
-	private String tipoCarro;
-	@Value("${application.tipovehiculo.moto}")
-	private String tipoMoto;
+	private static final String tipoCarro = "c";
+	private static final String tipoMoto = "m";
 	
 	@Autowired
 	ServicioRepositorio servicioRepositorio;
@@ -39,10 +39,13 @@ public class Vigilante {
 	}
 
 	public String ingresarVehiculo(ServicioEntity servicio) {
-		if(hayCupo(servicio.getTipoVehiculo())) {
+		LocalDateTime fechaIngreso = LocalDateTime.now();
+		servicio.setFechaIngreso(Date.from(fechaIngreso.atZone(ZoneId.systemDefault()).toInstant()));
+		servicio.setPlaca(servicio.getPlaca().toUpperCase());
+		if(!hayCupo(servicio.getTipoVehiculo())) {
 			return MEMSAJE_SIN_CUPO;
 		}
-		if(tieneRestriccion(servicio.getPlaca(), servicio.getFechaIngreso())) {
+		if(tieneRestriccion(servicio)) {
 			return MEMSAJE_RESTRINGIDO;
 		}
 		
@@ -50,6 +53,7 @@ public class Vigilante {
 		if(tarifa == null) {
 			return MEMSAJE_SIN_TARIFA; 
 		}
+		servicio.setTarifa(tarifa);
 		ServicioEntity servicioGuardado = servicioRepositorio.save(servicio);
 		if(servicioGuardado==null) {
 			return MEMSAJE_GUARDADO_ERROR;
@@ -73,10 +77,10 @@ public class Vigilante {
 		return false;
 	}
 	
-	public Boolean tieneRestriccion (String placa, Date fecha) {
-		if (placa.charAt(0) == LETRA_RESTRICCION) {
+	public Boolean tieneRestriccion (ServicioEntity servicio) {
+		if (servicio.getPlaca().charAt(0) == LETRA_RESTRICCION && servicio.getTipoVehiculo().equals(tipoCarro)) {
 			Calendar calendario = new GregorianCalendar();
-			calendario.setTime(fecha);
+			calendario.setTime(servicio.getFechaIngreso());
 			if(calendario.get(Calendar.DAY_OF_WEEK) > 2) {
 				return true;
 			}			
@@ -89,8 +93,6 @@ public class Vigilante {
 		tarifa = tarifaRepositorio.findByTipoVehiculo(tipoVehiculo);
 		return tarifa;
 	}
-	
-	
 	
 
 }

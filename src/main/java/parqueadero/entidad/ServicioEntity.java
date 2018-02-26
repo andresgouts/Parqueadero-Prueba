@@ -24,13 +24,26 @@ public class ServicioEntity {
 	@Column(nullable = false)
 	private String tipoVehiculo;
 	
-	private String cilindraje;
+	private Integer cilindraje;
 	
 	@Column(nullable = false)
 	private Date fechaIngreso;
 	
 	private Date fechaSalida;
 	
+	
+	
+	public ServicioEntity(Long idServicio, String placa, String tipoVehiculo, Integer cilindraje, Date fechaIngreso,
+			Date fechaSalida, TarifaEntity tarifa) {
+		this.idServicio = idServicio;
+		this.placa = placa;
+		this.tipoVehiculo = tipoVehiculo;
+		this.cilindraje = cilindraje;
+		this.fechaIngreso = fechaIngreso;
+		this.fechaSalida = fechaSalida;
+		this.tarifa = tarifa;
+	}
+
 	@ManyToOne
 	@JoinColumn(name="idTarifa",referencedColumnName="idTarifa")
 	private TarifaEntity tarifa;
@@ -59,11 +72,12 @@ public class ServicioEntity {
 		this.tipoVehiculo = tipoVehiculo;
 	}
 
-	public String getCilindraje() {
+	
+	public Integer getCilindraje() {
 		return cilindraje;
 	}
 
-	public void setCilindraje(String cilindraje) {
+	public void setCilindraje(Integer cilindraje) {
 		this.cilindraje = cilindraje;
 	}
 
