@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import parqueadero.dominio.Vigilante;
+import parqueadero.repositorio.FacturaRepositorio;
 import parqueadero.repositorio.ServicioRepositorio;
 import parqueadero.repositorio.TarifaRepositorio;
 
@@ -18,11 +19,13 @@ public class ServicioController {
     ServicioRepositorio servicioRepositoro;	
 	@Autowired
     TarifaRepositorio tarifaRepositorio;
+	@Autowired
+	FacturaRepositorio facturaRepositorio;
 	
     //Get All
 	@GetMapping("/notes/{placa}")
     public String consultarTarifa(@PathVariable(value = "placa") String placa) {
-		Vigilante vigilante = new Vigilante(this.servicioRepositoro, this.tarifaRepositorio);
+		Vigilante vigilante = new Vigilante(this.servicioRepositoro, this.tarifaRepositorio, this.facturaRepositorio);
 		return vigilante.facturarServicio(placa);
     }
 

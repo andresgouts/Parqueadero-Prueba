@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import parqueadero.entidad.FacturaEntity;
 import parqueadero.entidad.ServicioEntity;
 import parqueadero.entidad.TarifaEntity;
+import parqueadero.repositorio.FacturaRepositorio;
 import parqueadero.repositorio.ServicioRepositorio;
 import parqueadero.repositorio.TarifaRepositorio;
 
@@ -39,11 +40,15 @@ public class Vigilante {
 	ServicioRepositorio servicioRepositorio;
 	@Autowired
 	TarifaRepositorio tarifaRepositorio;	
-	
-	
-	public Vigilante(ServicioRepositorio servicioRepositorio, TarifaRepositorio tarifaRepositorio) {
+	@Autowired
+	FacturaRepositorio facturaRepositorio;
+			
+
+	public Vigilante(ServicioRepositorio servicioRepositorio, TarifaRepositorio tarifaRepositorio,
+			FacturaRepositorio facturaRepositorio) {
 		this.servicioRepositorio = servicioRepositorio;
 		this.tarifaRepositorio = tarifaRepositorio;
+		this.facturaRepositorio = facturaRepositorio;
 	}
 
 	public String ingresarVehiculo(ServicioEntity servicio) {
@@ -130,9 +135,13 @@ public class Vigilante {
 		factura.setValorOtrosConceptos(valorExtras);
 		factura.setTotalFactura(total);
 		
+		FacturaEntity facturaGuardada = facturaRepositorio.save(factura);
+		if(facturaGuardada != null) {
+			return "El valor del subtotal es de " + valorSubtotal.toString() + " El valor de los Extras es de " + valorExtras.toString() + 
+					"Para un total de " + total;		
+		}
+		return "Hubo un problema";
 		
-		return "El valor del subtotal es de " + valorSubtotal.toString() + " El valor de los Extras es de " + valorExtras.toString() + 
-				"Para un total de " + total;		
 	}
 	
 	public ServicioEntity buscarServicioActivo(String placa) {

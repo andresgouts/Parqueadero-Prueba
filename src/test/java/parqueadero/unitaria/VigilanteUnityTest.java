@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import parqueadero.databuilder.ServicioDataBuilder;
 import parqueadero.dominio.Vigilante;
 import parqueadero.entidad.ServicioEntity;
+import parqueadero.repositorio.FacturaRepositorio;
 import parqueadero.repositorio.ServicioRepositorio;
 import parqueadero.repositorio.TarifaRepositorio;
 
@@ -23,6 +24,7 @@ public class VigilanteUnityTest {
 	
 	ServicioRepositorio servicioRepositorio;
 	TarifaRepositorio tarifaRepositorio;
+	FacturaRepositorio facturaRepositorio;
 	ServicioDataBuilder servicioDataBuilder;
 	Vigilante vigilante;
 	private static final Long CAPACIDAD_CARROS =  20L;
@@ -38,8 +40,9 @@ public class VigilanteUnityTest {
 	public void setUp() {
 		servicioRepositorio = mock(ServicioRepositorio.class);
 		tarifaRepositorio = mock(TarifaRepositorio.class);
+		facturaRepositorio = mock(FacturaRepositorio.class);
 		servicioDataBuilder = new ServicioDataBuilder();
-		vigilante = new Vigilante(servicioRepositorio, tarifaRepositorio);
+		vigilante = new Vigilante(servicioRepositorio, tarifaRepositorio, facturaRepositorio);
 	}
 	
 	
