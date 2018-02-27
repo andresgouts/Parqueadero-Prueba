@@ -151,6 +151,8 @@ public class Vigilante {
 				
 		if (servicio.getTipoVehiculo().equals(TIPO_VEHICULO_MOTO) && servicio.getCilindraje()>CILINDRAJE_COBRO_EXTRA) {
 			factura.setValorOtrosConceptos(VALOR_COBRO_EXTRA);
+		} else {
+			factura.setValorOtrosConceptos(0D);
 		}
 		
 		factura.setTotalFactura(factura.getSubtotal() + factura.getValorOtrosConceptos());
