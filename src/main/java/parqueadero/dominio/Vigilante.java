@@ -157,8 +157,9 @@ public class Vigilante {
 		FacturaEntity facturaGuardada = guuardarFactura(factura);
 		
 		if(facturaGuardada != null) {
-			return "El valor del subtotal es de " + facturaGuardada.getSubtotal() + " El valor de los Extras es de " + 
-					facturaGuardada.getValorOtrosConceptos() + "Para un total de " + facturaGuardada.getTotalFactura();		
+			return "Esta sacando el vahiculo de placas" + facturaGuardada.getServicio().getPlaca() + ". El valor del subtotal es de " + 
+					facturaGuardada.getSubtotal() + " El valor de los Extras es de " + facturaGuardada.getValorOtrosConceptos() 
+					+ " Para un total de " + facturaGuardada.getTotalFactura();		
 		}
 		return "Hubo un problema";
 		

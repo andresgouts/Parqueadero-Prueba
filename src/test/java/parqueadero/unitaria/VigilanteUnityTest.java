@@ -256,7 +256,7 @@ public class VigilanteUnityTest {
 		Double valor = vigilante.calcularSubtotalFactura(diasHoras, servicio.getTipoVehiculo());
 		
 		//Assert
-		assertEquals(valor, ValorEsperado, 0.0);
+		assertEquals(valor, ValorEsperado);
 		
 	}
 	
