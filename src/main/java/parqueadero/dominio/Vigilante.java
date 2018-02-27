@@ -29,6 +29,7 @@ public class Vigilante {
 	private static final String MEMSAJE_GUARDADO_EXITOSO = "Se ha registrado el ingreso exitosamente";
 	private static final String MEMSAJE_GUARDADO_ERROR = "Se ha presentado un error durante el guardado";
 	private static final String MEMSAJE_NO_EXISTE_VEHICULO = "No se ha encontrado un vehiculo estacionado con esa placa";
+	private static final String MEMSAJE_NO_ERROR_FACTURA = "Ocurrio un problema al generar la factura";
 	private static final Integer CILINDRAJE_COBRO_EXTRA = 500;
 	private static final Double VALOR_COBRO_EXTRA = 2000D;
 	private static final Long MINUTOS_DE_UNA_HORA = 60L;
@@ -157,11 +158,11 @@ public class Vigilante {
 		FacturaEntity facturaGuardada = guuardarFactura(factura);
 		
 		if(facturaGuardada != null) {
-			return "Esta sacando el vahiculo de placas" + facturaGuardada.getServicio().getPlaca() + ". El valor del subtotal es de " + 
+			return "Esta sacando el vahiculo de placas " + facturaGuardada.getServicio().getPlaca() + ". El valor del subtotal es de " + 
 					facturaGuardada.getSubtotal() + " El valor de los Extras es de " + facturaGuardada.getValorOtrosConceptos() 
 					+ " Para un total de " + facturaGuardada.getTotalFactura();		
 		}
-		return "Hubo un problema";
+		return MEMSAJE_NO_ERROR_FACTURA;
 		
 	}
 	
