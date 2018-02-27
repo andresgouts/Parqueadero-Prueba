@@ -14,9 +14,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
 
+import parqueadero.databuilder.FacturaDataBuilder;
 import parqueadero.databuilder.ServicioDataBuilder;
 import parqueadero.databuilder.TarifaDataBuilder;
 import parqueadero.dominio.Vigilante;
+import parqueadero.entidad.FacturaEntity;
 import parqueadero.entidad.ServicioEntity;
 import parqueadero.entidad.TarifaEntity;
 import parqueadero.repositorio.FacturaRepositorio;
@@ -30,6 +32,7 @@ public class VigilanteUnityTest {
 	FacturaRepositorio facturaRepositorio;
 	ServicioDataBuilder servicioDataBuilder;
 	TarifaDataBuilder tarifaDataBuilder;
+	FacturaDataBuilder facturaDataBuilder;
 	Vigilante vigilante;
 	private static final Long CAPACIDAD_CARROS =  20L;
 	private static final Long CAPACIDAD_MOTOS = 10L;
@@ -47,6 +50,7 @@ public class VigilanteUnityTest {
 		facturaRepositorio = mock(FacturaRepositorio.class);
 		servicioDataBuilder = new ServicioDataBuilder();
 		tarifaDataBuilder = new  TarifaDataBuilder();
+		facturaDataBuilder = new FacturaDataBuilder();
 		vigilante = new Vigilante(servicioRepositorio, tarifaRepositorio, facturaRepositorio);
 	}
 	
@@ -217,7 +221,7 @@ public class VigilanteUnityTest {
 		//Act
 		TarifaEntity tarifaAsignada = vigilante.asignarTarifa(servicio.getTipoVehiculo());
 		
-		//asert
+		//Assert
 		assertEquals(tarifaAsignada.getTipoVehiculo(), servicio.getTipoVehiculo());
 		
 	}
@@ -232,7 +236,7 @@ public class VigilanteUnityTest {
 		//Act
 		TarifaEntity tarifaAsignada = vigilante.asignarTarifa(servicio.getTipoVehiculo());
 		
-		//asert
+		//Assert
 		assertEquals(tarifaAsignada.getTipoVehiculo(), servicio.getTipoVehiculo());
 		
 	}
@@ -251,8 +255,23 @@ public class VigilanteUnityTest {
 		//Act
 		Double valor = vigilante.calcularSubtotalFactura(diasHoras, servicio.getTipoVehiculo());
 		
-		//asert
+		//Assert
 		assertEquals(valor, ValorEsperado, 0.0);
+		
+	}
+	
+	@Test
+	public void guardarFacturaTest() {
+		//Arrange
+		ServicioEntity servicio = servicioDataBuilder.conFechaEgreso(new Date()).build();
+		FacturaEntity factura = facturaDataBuilder.conServicio(servicio).build();		
+		when(facturaRepositorio.save(factura)).thenReturn(factura);
+		
+		//Act
+		FacturaEntity facturaGuardada = vigilante.guuardarFactura(factura);
+		
+		//Assert
+		assertEquals(factura.getTotalFactura(), facturaGuardada.getTotalFactura());
 		
 	}
 	

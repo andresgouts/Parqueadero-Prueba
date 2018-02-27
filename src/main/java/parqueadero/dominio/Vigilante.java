@@ -51,6 +51,11 @@ public class Vigilante {
 		this.facturaRepositorio = facturaRepositorio;
 	}
 
+	/**
+	 * Metodo para ingresar un vehiculo al parqueadero
+	 * @param servicio
+	 * @return
+	 */
 	public String ingresarVehiculo(ServicioEntity servicio) {
 		LocalDateTime fechaIngreso = LocalDateTime.now();
 		servicio.setFechaIngreso(Date.from(fechaIngreso.atZone(ZoneId.systemDefault()).toInstant()));
@@ -77,6 +82,11 @@ public class Vigilante {
 		
 	}
 	
+	/**
+	 * Valida si hay cupo en el parqueadero para un tipo de vehiculo
+	 * @param tipoVehiculo
+	 * @return
+	 */
 	public Boolean hayCupo(String tipoVehiculo) {
 		Long camposOcupados = servicioRepositorio.countByFechaSalidaAndTipoVehiculo(null, tipoVehiculo);
 		if (tipoVehiculo.equals(TIPO_VEHIUCLO_CARRO)) {
@@ -91,6 +101,11 @@ public class Vigilante {
 		return false;
 	}
 	
+	/**
+	 * Valida si el vehiculo a ingresar al parqueadero tiene restriccion
+	 * @param servicio
+	 * @return
+	 */
 	public Boolean tieneRestriccion (ServicioEntity servicio) {
 		if (servicio.getPlaca().charAt(0) == LETRA_RESTRICCION && servicio.getTipoVehiculo().equals(TIPO_VEHIUCLO_CARRO)) {
 			Calendar calendario = new GregorianCalendar();
@@ -102,52 +117,68 @@ public class Vigilante {
 		return false;
 	}
 	
+	/**
+	 * Consulta la tarifa a aplicar al tipo de vehiculo
+	 * @param tipoVehiculo
+	 * @return
+	 */
 	public TarifaEntity asignarTarifa(String tipoVehiculo) {
 		TarifaEntity tarifa = null;
 		tarifa = tarifaRepositorio.findByTipoVehiculo(tipoVehiculo);
 		return tarifa;
 	}
 	
+	/**
+	 * genera la salida y factura de vehiculos
+	 * @param placa
+	 * @return
+	 */
 	public String facturarServicio(String placa) {
 		FacturaEntity factura = new FacturaEntity();
 		LocalDateTime fechaSalida = LocalDateTime.now();
-		ServicioEntity servicio = buscarServicioActivo(placa);
-		Double valorExtras = 0D;
+		ServicioEntity servicio = buscarServicioActivo(placa);		
 		if (servicio == null) {
 			return MEMSAJE_NO_EXISTE_VEHICULO;
-		}
+		}		
 		servicio.setFechaSalida(Date.from(fechaSalida.atZone(ZoneId.systemDefault()).toInstant()));
+		factura.setServicio(servicio);
 		
 		List<Long> diasHorasDeServicio = calcularTiempoServicio(servicio.getFechaIngreso(), servicio.getFechaSalida());
-		Double valorSubtotal = calcularSubtotalFactura(diasHorasDeServicio, servicio.getTipoVehiculo());
-		
-		
-		if (servicio.getTipoVehiculo().equals(TIPO_VEHICULO_MOTO) && servicio.getCilindraje()>CILINDRAJE_COBRO_EXTRA) {
-			valorExtras = VALOR_COBRO_EXTRA;			
-		}
-		
-		Double total = valorSubtotal + valorExtras;
-		
-		factura.setServicio(servicio);
 		factura.setDiasfacturados(diasHorasDeServicio.get(0));
 		factura.setHorasFacturadas(diasHorasDeServicio.get(1));
-		factura.setSubtotal(valorSubtotal);
-		factura.setValorOtrosConceptos(valorExtras);
-		factura.setTotalFactura(total);
+		factura.setSubtotal(calcularSubtotalFactura(diasHorasDeServicio, servicio.getTipoVehiculo()));
+				
+		if (servicio.getTipoVehiculo().equals(TIPO_VEHICULO_MOTO) && servicio.getCilindraje()>CILINDRAJE_COBRO_EXTRA) {
+			factura.setValorOtrosConceptos(VALOR_COBRO_EXTRA);
+		}
 		
-		FacturaEntity facturaGuardada = facturaRepositorio.save(factura);
+		factura.setTotalFactura(factura.getSubtotal() + factura.getValorOtrosConceptos());
+		
+		FacturaEntity facturaGuardada = guuardarFactura(factura);
+		
 		if(facturaGuardada != null) {
-			return "El valor del subtotal es de " + valorSubtotal.toString() + " El valor de los Extras es de " + valorExtras.toString() + 
-					"Para un total de " + total;		
+			return "El valor del subtotal es de " + facturaGuardada.getSubtotal() + " El valor de los Extras es de " + 
+					facturaGuardada.getValorOtrosConceptos() + "Para un total de " + facturaGuardada.getTotalFactura();		
 		}
 		return "Hubo un problema";
 		
 	}
 	
+	/**
+	 * Consulta un servicio activo por placa
+	 * @param placa
+	 * @return
+	 */
 	public ServicioEntity buscarServicioActivo(String placa) {
 		return servicioRepositorio.findByPlacaAndFechaSalida(placa, null);
 	}
 	
+	/**
+	 * calcula los tiempos de estacionamiento segun fecha inicio y fin 
+	 * @param inicio
+	 * @param fin
+	 * @return
+	 */
 	public List<Long> calcularTiempoServicio(Date inicio, Date fin) {
 		List<Long> diasHoras = new ArrayList<>();
 		Long cantidadDias;
@@ -189,6 +220,10 @@ public class Vigilante {
 		valorTotal = valorTotal + (totalDiasHoras.get(1) * tarifa.getValorHora());
 		return valorTotal;
 		
-	}	
+	}
+	
+	public FacturaEntity guuardarFactura (FacturaEntity factura) {				
+		return facturaRepositorio.save(factura);
+	}
 
 }
