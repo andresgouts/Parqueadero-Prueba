@@ -244,15 +244,15 @@ public class VigilanteUnityTest {
 		TarifaEntity tarifa = tarifaDataBuilder.conTipoVehiculo("m").build();
 		when(tarifaRepositorio.findByTipoVehiculo(servicio.getTipoVehiculo())).thenReturn(tarifa);
 		List<Long> diasHoras = new ArrayList<>();
-		diasHoras.set(0, 1L);
-		diasHoras.set(1, 2L);
-		
+		diasHoras.add(1L);
+		diasHoras.add(2L);
+		Double ValorEsperado = (diasHoras.get(0)* tarifa.getValorDia()) + (diasHoras.get(1)* tarifa.getValorHora()); 
 		
 		//Act
 		Double valor = vigilante.calcularSubtotalFactura(diasHoras, servicio.getTipoVehiculo());
 		
 		//asert
-		assertEquals(valor, 8500, 0);
+		assertEquals(valor, ValorEsperado, 0.0);
 		
 	}
 	

@@ -10,16 +10,12 @@ public class TarifaDataBuilder {
 	private Double valorDia;
 	
 	public TarifaDataBuilder(){
-		
-	}
-	
-	public TarifaDataBuilder(Long idTarifa, String tipoVehiculo, Double valorHora, Double valorDia) {
 		this.idTarifa = 1L;
 		this.tipoVehiculo = "m";
 		this.valorHora = 500D;
 		this.valorDia = 4000D;
 	}
-	
+
 	public TarifaDataBuilder conIdTarifa(Long idTarifa) {
 		this.idTarifa = idTarifa;
 		return this;

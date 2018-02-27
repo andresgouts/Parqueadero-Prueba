@@ -186,7 +186,7 @@ public class Vigilante {
 	public Double calcularSubtotalFactura(List<Long> totalDiasHoras, String tipoVehiculo) {
 		TarifaEntity tarifa = tarifaRepositorio.findByTipoVehiculo(tipoVehiculo);
 		double valorTotal = totalDiasHoras.get(0) * tarifa.getValorDia();
-		valorTotal = valorTotal + (totalDiasHoras.get(1) * tarifa.getValorDia());
+		valorTotal = valorTotal + (totalDiasHoras.get(1) * tarifa.getValorHora());
 		return valorTotal;
 		
 	}	
