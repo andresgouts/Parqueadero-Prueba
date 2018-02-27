@@ -189,10 +189,6 @@ public class Vigilante {
 		valorTotal = valorTotal + (totalDiasHoras.get(1) * tarifa.getValorDia());
 		return valorTotal;
 		
-	}
-	
-	
-	
-	
+	}	
 
 }

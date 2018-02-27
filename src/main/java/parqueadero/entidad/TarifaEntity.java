@@ -21,6 +21,14 @@ public class TarifaEntity {
 	
 	@Column(nullable = false)
 	private Double valorDia;
+	
+	public TarifaEntity(Long idTarifa, String tipoVehiculo, Double valorHora, Double valorDia) {
+		super();
+		this.idTarifa = idTarifa;
+		this.tipoVehiculo = tipoVehiculo;
+		this.valorHora = valorHora;
+		this.valorDia = valorDia;
+	}
 
 	public Long getIdTarifa() {
 		return idTarifa;

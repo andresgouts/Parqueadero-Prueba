@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -14,8 +15,10 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
 
 import parqueadero.databuilder.ServicioDataBuilder;
+import parqueadero.databuilder.TarifaDataBuilder;
 import parqueadero.dominio.Vigilante;
 import parqueadero.entidad.ServicioEntity;
+import parqueadero.entidad.TarifaEntity;
 import parqueadero.repositorio.FacturaRepositorio;
 import parqueadero.repositorio.ServicioRepositorio;
 import parqueadero.repositorio.TarifaRepositorio;
@@ -26,6 +29,7 @@ public class VigilanteUnityTest {
 	TarifaRepositorio tarifaRepositorio;
 	FacturaRepositorio facturaRepositorio;
 	ServicioDataBuilder servicioDataBuilder;
+	TarifaDataBuilder tarifaDataBuilder;
 	Vigilante vigilante;
 	private static final Long CAPACIDAD_CARROS =  20L;
 	private static final Long CAPACIDAD_MOTOS = 10L;
@@ -42,6 +46,7 @@ public class VigilanteUnityTest {
 		tarifaRepositorio = mock(TarifaRepositorio.class);
 		facturaRepositorio = mock(FacturaRepositorio.class);
 		servicioDataBuilder = new ServicioDataBuilder();
+		tarifaDataBuilder = new  TarifaDataBuilder();
 		vigilante = new Vigilante(servicioRepositorio, tarifaRepositorio, facturaRepositorio);
 	}
 	
@@ -152,8 +157,8 @@ public class VigilanteUnityTest {
 	@Test
 	public void calcularTiempoMinutosTest()  {
 		//Arrange
-		Date fechaInicio = new Date(2018, 2, 01, 0, 0);
-		Date fechaFin = new Date(2018, 2, 02, 8, 15);
+		Date fechaInicio = new Date(2018, 2, 01, 8, 0);
+		Date fechaFin = new Date(2018, 2, 01, 8, 15);
 		
 		//Act
 		List<Long> tiempoServicio = vigilante.calcularTiempoServicio(fechaInicio, fechaFin);
@@ -161,5 +166,94 @@ public class VigilanteUnityTest {
 		//assert
 		assertNotNull(tiempoServicio);
 	}
-
+	
+	@Test
+	public void calcularTiempoDiasHorasTest()  {
+		//Arrange
+		Date fechaInicio = new Date(2018, 2, 01, 0, 0);
+		Date fechaFin = new Date(2018, 2, 02, 12, 15);
+		
+		//Act
+		List<Long> tiempoServicio = vigilante.calcularTiempoServicio(fechaInicio, fechaFin);
+		
+		//assert
+		assertNotNull(tiempoServicio);
+	}
+	
+	@Test
+	public void calcularTiempoHorasTest()  {
+		//Arrange
+		Date fechaInicio = new Date(2018, 2, 01, 0, 0);
+		Date fechaFin = new Date(2018, 2, 02, 07, 15);
+		
+		//Act
+		List<Long> tiempoServicio = vigilante.calcularTiempoServicio(fechaInicio, fechaFin);
+		
+		//assert
+		assertNotNull(tiempoServicio);
+	}
+	
+	@Test
+	public void buscarServicioActivoTest()  {
+		//Arrange
+		ServicioEntity servicio = servicioDataBuilder.build();
+		when(servicioRepositorio.findByPlacaAndFechaSalida(servicio.getPlaca(), null)).thenReturn(servicio);
+		
+		//Act
+		ServicioEntity servicioConsultado = vigilante.buscarServicioActivo(servicio.getPlaca());
+		
+		//Assert
+		assertEquals(servicioConsultado.getPlaca(), servicio.getPlaca());
+		
+	}
+	
+	@Test
+	public void asignarTarifaCarroTest() {
+		//Arrange
+		ServicioEntity servicio = servicioDataBuilder.conTipoVehiculo("c").build();
+		TarifaEntity tarifa = tarifaDataBuilder.conTipoVehiculo("c").build();
+		when(tarifaRepositorio.findByTipoVehiculo(servicio.getTipoVehiculo())).thenReturn(tarifa);
+		
+		//Act
+		TarifaEntity tarifaAsignada = vigilante.asignarTarifa(servicio.getTipoVehiculo());
+		
+		//asert
+		assertEquals(tarifaAsignada.getTipoVehiculo(), servicio.getTipoVehiculo());
+		
+	}
+	
+	@Test
+	public void asignarTarifaMotoTest() {
+		//Arrange
+		ServicioEntity servicio = servicioDataBuilder.conTipoVehiculo("m").build();
+		TarifaEntity tarifa = tarifaDataBuilder.conTipoVehiculo("m").build();
+		when(tarifaRepositorio.findByTipoVehiculo(servicio.getTipoVehiculo())).thenReturn(tarifa);
+		
+		//Act
+		TarifaEntity tarifaAsignada = vigilante.asignarTarifa(servicio.getTipoVehiculo());
+		
+		//asert
+		assertEquals(tarifaAsignada.getTipoVehiculo(), servicio.getTipoVehiculo());
+		
+	}
+	
+	@Test
+	public void calcularSubtotalTest() {
+		//Arrange
+		ServicioEntity servicio = servicioDataBuilder.conTipoVehiculo("m").build();
+		TarifaEntity tarifa = tarifaDataBuilder.conTipoVehiculo("m").build();
+		when(tarifaRepositorio.findByTipoVehiculo(servicio.getTipoVehiculo())).thenReturn(tarifa);
+		List<Long> diasHoras = new ArrayList<>();
+		diasHoras.set(0, 1L);
+		diasHoras.set(1, 2L);
+		
+		
+		//Act
+		Double valor = vigilante.calcularSubtotalFactura(diasHoras, servicio.getTipoVehiculo());
+		
+		//asert
+		assertEquals(valor, 8500, 0);
+		
+	}
+	
 }
