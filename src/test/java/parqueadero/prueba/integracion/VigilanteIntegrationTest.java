@@ -2,9 +2,9 @@ package parqueadero.prueba.integracion;
 
 import static org.junit.Assert.assertNotEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +32,7 @@ public class VigilanteIntegrationTest {
 	
 	@Test
 	@Sql({"/borrarServicios.sql", "/ingresarMotoAltoCilindraje.sql"})
-	public void ingresarMotoAltoCilindraje() throws Exception {
+	public void SacarMotoAltoCilindraje() throws Exception {
 		
 		MockHttpServletRequestBuilder solicitud = get("/vigilante/sacar/ZJV11C").accept(MediaType.TEXT_HTML_VALUE);
 		MvcResult resultado = this.mocMvc.perform(solicitud).andExpect(status().isOk()).andReturn();		
@@ -45,7 +45,7 @@ public class VigilanteIntegrationTest {
 	
 	@Test
 	@Sql({"/borrarServicios.sql", "/ingresarMotoBajoCilindraje.sql"})
-	public void ingresarMotoBajoCilindraje() throws Exception {
+	public void sacarMotoBajoCilindraje() throws Exception {
 		
 		MockHttpServletRequestBuilder solicitud = get("/vigilante/sacar/ZJV11C").accept(MediaType.TEXT_HTML_VALUE);
 		MvcResult resultado = this.mocMvc.perform(solicitud).andExpect(status().isOk()).andReturn();		
@@ -58,9 +58,29 @@ public class VigilanteIntegrationTest {
 	
 	@Test
 	@Sql({"/borrarServicios.sql", "/ingresarCarro.sql"})
-	public void ingresarCarro() throws Exception {
+	public void sacarCarro() throws Exception {
 		
 		MockHttpServletRequestBuilder solicitud = get("/vigilante/sacar/HHP105").accept(MediaType.TEXT_HTML_VALUE);
+		MvcResult resultado = this.mocMvc.perform(solicitud).andExpect(status().isOk()).andReturn();		
+		
+		String respuesta = resultado.getResponse().getContentAsString(); 
+		
+		assertNotEquals(MEMSAJE_NO_ERROR_FACTURA, respuesta);
+		
+	}
+	
+	@Test
+	@Sql({"/borrarServicios.sql"})
+	public void ingresarCarro() throws Exception {
+		
+		MockHttpServletRequestBuilder solicitud = put("/ingresar").contentType(MediaType.APPLICATION_JSON).
+				content({"cilindraje":null,
+					"fechaIngreso":1519392071000,
+					"fechaSalida":null,
+					"idServicio":null,
+					"placa":"HHP105",
+					"tipoVehiculo":"c",
+					"tarifa":null});
 		MvcResult resultado = this.mocMvc.perform(solicitud).andExpect(status().isOk()).andReturn();		
 		
 		String respuesta = resultado.getResponse().getContentAsString(); 
