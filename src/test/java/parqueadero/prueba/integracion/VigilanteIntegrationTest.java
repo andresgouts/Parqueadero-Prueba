@@ -1,5 +1,6 @@
 package parqueadero.prueba.integracion;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -128,7 +129,7 @@ public class VigilanteIntegrationTest {
 		
 		String respuesta = resultado.getResponse().getContentAsString(); 
 		
-		assertNotEquals(INGRESO_SIN_CILINDRAJE, respuesta);
+		assertEquals(INGRESO_SIN_CILINDRAJE, respuesta);
 		
 	}
 	
@@ -144,7 +145,7 @@ public class VigilanteIntegrationTest {
 		
 		String respuesta = resultado.getResponse().getContentAsString(); 
 		
-		assertNotEquals(INGRESO_SIN_CILINDRAJE, respuesta);
+		assertNotEquals(MEMSAJE_NO_ERROR_FACTURA, respuesta);
 		
 	}
 	
@@ -160,7 +161,7 @@ public class VigilanteIntegrationTest {
 		
 		String respuesta = resultado.getResponse().getContentAsString(); 
 		
-		assertNotEquals(MEMSAJE_SIN_CUPO, respuesta);
+		assertEquals(MEMSAJE_SIN_CUPO, respuesta);
 		
 	}
 

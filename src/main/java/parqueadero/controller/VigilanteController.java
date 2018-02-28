@@ -31,7 +31,7 @@ public class VigilanteController {
 	private static final String SALIDA_SIN_PLACA = "Debe digitar la placa del vehiculo que desea sacar";
 	private static final String INGRESO_SIN_TIPO_VEHICULO = "Debe seleccionar un tiop de vehiculo";
 	private static final String INGRESO_SIN_CILINDRAJE = "Debe ingresar el cilindraje del vehiculo";
-	private static final String TIPO_VEHICULO_MOTO = "M";
+	private static final String TIPO_VEHICULO_MOTO = "m";
 	
 	//Sacar vehiculo
 	@GetMapping("/sacar/{placa}")
