@@ -202,9 +202,41 @@ public class VigilanteIntegrationTest {
 	
 	@Test
 	@Sql({"/borrarServicios.sql","/eliminarTarifas.sql"})
+	public void ingresarCarroPLacaVacia() throws Exception {
+		
+		ServicioEntity servicio = servicioDataBuilder.conCilindraje(null).conPlaca("").conTipoVehiculo("c").build();
+		String servicioJson = mapper.writeValueAsString(servicio);
+		MockHttpServletRequestBuilder solicitud = post("/vigilante/ingresar").contentType(MediaType.APPLICATION_JSON_VALUE).
+				content(servicioJson);
+		MvcResult resultado = this.mocMvc.perform(solicitud).andExpect(status().isOk()).andReturn();		
+		
+		String respuesta = resultado.getResponse().getContentAsString(); 
+		
+		assertEquals(INGRESO_SIN_PLACA, respuesta);
+		
+	}
+	
+	@Test
+	@Sql({"/borrarServicios.sql","/eliminarTarifas.sql"})
 	public void ingresarVehiculoSinTipoVehiculo() throws Exception {
 		
 		ServicioEntity servicio = servicioDataBuilder.conCilindraje(null).conPlaca("hhp105").conTipoVehiculo(null).build();
+		String servicioJson = mapper.writeValueAsString(servicio);
+		MockHttpServletRequestBuilder solicitud = post("/vigilante/ingresar").contentType(MediaType.APPLICATION_JSON_VALUE).
+				content(servicioJson);
+		MvcResult resultado = this.mocMvc.perform(solicitud).andExpect(status().isOk()).andReturn();		
+		
+		String respuesta = resultado.getResponse().getContentAsString(); 
+		
+		assertEquals(INGRESO_SIN_TIPO_VEHICULO, respuesta);
+		
+	}
+	
+	@Test
+	@Sql({"/borrarServicios.sql","/eliminarTarifas.sql"})
+	public void ingresarVehiculoConTipoVehiculoVacio() throws Exception {
+		
+		ServicioEntity servicio = servicioDataBuilder.conCilindraje(null).conPlaca("hhp105").conTipoVehiculo("").build();
 		String servicioJson = mapper.writeValueAsString(servicio);
 		MockHttpServletRequestBuilder solicitud = post("/vigilante/ingresar").contentType(MediaType.APPLICATION_JSON_VALUE).
 				content(servicioJson);

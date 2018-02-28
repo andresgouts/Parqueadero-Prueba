@@ -28,7 +28,6 @@ public class VigilanteController {
 	FacturaRepositorio facturaRepositorio;
 	
 	private static final String INGRESO_SIN_PLACA = "Debe digitar la placa del vehiculo que desea ingresar";
-	private static final String SALIDA_SIN_PLACA = "Debe digitar la placa del vehiculo que desea sacar";
 	private static final String INGRESO_SIN_TIPO_VEHICULO = "Debe seleccionar un tiop de vehiculo";
 	private static final String INGRESO_SIN_CILINDRAJE = "Debe ingresar el cilindraje del vehiculo";
 	private static final String TIPO_VEHICULO_MOTO = "m";
@@ -36,9 +35,6 @@ public class VigilanteController {
 	//Sacar vehiculo
 	@GetMapping("/sacar/{placa}")
 	public String consultarTarifa(@PathVariable(value = "placa") String placa) {
-		if (placa == null || placa.isEmpty()) {
-			return SALIDA_SIN_PLACA;
-		}
 		Vigilante vigilante = new Vigilante(this.servicioRepositoro, this.tarifaRepositorio, this.facturaRepositorio);
 		return vigilante.facturarServicio(placa);
 	}
