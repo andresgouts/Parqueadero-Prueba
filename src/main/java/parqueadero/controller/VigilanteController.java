@@ -1,5 +1,7 @@
 package parqueadero.controller;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +56,15 @@ public class VigilanteController {
 		
 		Vigilante vigilante = new Vigilante(this.servicioRepositoro, this.tarifaRepositorio, this.facturaRepositorio);
 		return vigilante.ingresarVehiculo(servicio);
-	}	
+	}
+	
+	//Consultar vehiculos parqueados
+	@GetMapping("/consultar")
+	public List<ServicioEntity> consultarVehiculosParqueados() {
+		Vigilante vigilante = new Vigilante(this.servicioRepositoro, this.tarifaRepositorio, this.facturaRepositorio);
+		return vigilante.consultarVehiculosParqueados();
+	}
+	
+	
 
 }

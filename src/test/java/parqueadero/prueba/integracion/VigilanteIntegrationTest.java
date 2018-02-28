@@ -6,6 +6,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,6 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import parqueadero.databuilder.ServicioDataBuilder;
@@ -243,6 +246,36 @@ public class VigilanteIntegrationTest {
 		String respuesta = resultado.getResponse().getContentAsString(); 
 		
 		assertEquals(INGRESO_SIN_TIPO_VEHICULO, respuesta);
+		
+	}
+	
+	@Test
+	@Sql({"/borrarServicios.sql", "/llenarCupos.sql"})
+	public void listarVehiculos() throws Exception {
+		
+		MockHttpServletRequestBuilder solicitud = get("/vigilante/consultar").accept(MediaType.APPLICATION_JSON);
+		MvcResult resultado = this.mocMvc.perform(solicitud).andExpect(status().isOk()).andReturn();		
+		
+		byte[] respuesta  = resultado.getResponse().getContentAsByteArray();
+		List<ServicioEntity> servicios = this.mapper.readValue(respuesta, new TypeReference<List<ServicioEntity>>() {
+		});
+		
+		assertEquals(30, servicios.size());
+		
+	}
+	
+	@Test
+	@Sql({"/borrarServicios.sql"})
+	public void listarVehiculosVacio() throws Exception {
+		
+		MockHttpServletRequestBuilder solicitud = get("/vigilante/consultar").accept(MediaType.APPLICATION_JSON);
+		MvcResult resultado = this.mocMvc.perform(solicitud).andExpect(status().isOk()).andReturn();		
+		
+		byte[] respuesta  = resultado.getResponse().getContentAsByteArray();
+		List<ServicioEntity> servicios = this.mapper.readValue(respuesta, new TypeReference<List<ServicioEntity>>() {
+		});
+		
+		assertEquals(0, servicios.size());
 		
 	}
 

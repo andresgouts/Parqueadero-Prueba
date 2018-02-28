@@ -279,4 +279,25 @@ public class VigilanteUnityTest {
 		
 	}
 	
+	@Test
+	public void buscarVehiculosParqueados(){
+		//Arrange
+		ServicioEntity servicioMoto = servicioDataBuilder.build();
+		ServicioEntity servicioCarro = servicioDataBuilder.conPlaca("HHP105").conTipoVehiculo("c").build();
+		List<ServicioEntity> listaVehiculos = new ArrayList<>();
+		listaVehiculos.add(servicioMoto);
+		listaVehiculos.add(servicioCarro);
+		
+		when(servicioRepositorio.findByFechaSalida(null)).thenReturn(listaVehiculos);
+		
+		//Act
+		List<ServicioEntity> listaVehiculosEncontrados = vigilante.consultarVehiculosParqueados();
+		
+		//Assert
+		assertEquals(listaVehiculos.get(0).getPlaca(), listaVehiculosEncontrados.get(0).getPlaca());
+		assertEquals(listaVehiculos.get(1).getPlaca(), listaVehiculosEncontrados.get(1).getPlaca());
+		assertEquals(listaVehiculos.size(), listaVehiculosEncontrados.size());
+		
+	}
+	
 }
