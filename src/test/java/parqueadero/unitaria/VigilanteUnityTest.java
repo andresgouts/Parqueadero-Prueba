@@ -4,6 +4,8 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -161,11 +163,11 @@ public class VigilanteUnityTest {
 	@Test
 	public void calcularTiempoMinutosTest()  {
 		//Arrange
-		Date fechaInicio = new Date(2018, 2, 01, 8, 0);
-		Date fechaFin = new Date(2018, 2, 01, 8, 15);
-		
+		LocalDateTime ldtFechaInicio = LocalDateTime.parse("2018-02-01T08:00");
+		LocalDateTime ldtfechaFin = LocalDateTime.parse("2018-02-01T08:15");
 		//Act
-		List<Long> tiempoServicio = vigilante.calcularTiempoServicio(fechaInicio, fechaFin);
+		List<Long> tiempoServicio = vigilante.calcularTiempoServicio(Date.from(ldtFechaInicio.atZone(ZoneId.systemDefault()).toInstant()), 
+				Date.from(ldtfechaFin.atZone(ZoneId.systemDefault()).toInstant()));
 		
 		//assert
 		assertNotNull(tiempoServicio);
@@ -174,11 +176,12 @@ public class VigilanteUnityTest {
 	@Test
 	public void calcularTiempoDiasHorasTest()  {
 		//Arrange
-		Date fechaInicio = new Date(2018, 2, 01, 0, 0);
-		Date fechaFin = new Date(2018, 2, 02, 12, 15);
+		LocalDateTime ldtFechaInicio = LocalDateTime.parse("2018-02-01T00:00");
+		LocalDateTime ldtfechaFin = LocalDateTime.parse("2018-02-12T12:15");
 		
 		//Act
-		List<Long> tiempoServicio = vigilante.calcularTiempoServicio(fechaInicio, fechaFin);
+		List<Long> tiempoServicio = vigilante.calcularTiempoServicio(Date.from(ldtFechaInicio.atZone(ZoneId.systemDefault()).toInstant()), 
+				Date.from(ldtfechaFin.atZone(ZoneId.systemDefault()).toInstant()));
 		
 		//assert
 		assertNotNull(tiempoServicio);
@@ -187,11 +190,12 @@ public class VigilanteUnityTest {
 	@Test
 	public void calcularTiempoHorasTest()  {
 		//Arrange
-		Date fechaInicio = new Date(2018, 2, 01, 0, 0);
-		Date fechaFin = new Date(2018, 2, 02, 07, 15);
+		LocalDateTime ldtFechaInicio = LocalDateTime.parse("2018-02-01T00:00");
+		LocalDateTime ldtfechaFin = LocalDateTime.parse("2018-02-02T07:15");
 		
 		//Act
-		List<Long> tiempoServicio = vigilante.calcularTiempoServicio(fechaInicio, fechaFin);
+		List<Long> tiempoServicio = vigilante.calcularTiempoServicio(Date.from(ldtFechaInicio.atZone(ZoneId.systemDefault()).toInstant()), 
+				Date.from(ldtfechaFin.atZone(ZoneId.systemDefault()).toInstant()));
 		
 		//assert
 		assertNotNull(tiempoServicio);

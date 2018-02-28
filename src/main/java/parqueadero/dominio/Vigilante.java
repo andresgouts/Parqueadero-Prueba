@@ -58,8 +58,8 @@ public class Vigilante {
 	 * @return
 	 */
 	public String ingresarVehiculo(ServicioEntity servicio) {
-		LocalDateTime fechaIngreso = LocalDateTime.now();
-		servicio.setFechaIngreso(Date.from(fechaIngreso.atZone(ZoneId.systemDefault()).toInstant()));
+		//LocalDateTime fechaIngreso = LocalDateTime.now();
+		//servicio.setFechaIngreso(Date.from(fechaIngreso.atZone(ZoneId.systemDefault()).toInstant()));
 		servicio.setPlaca(servicio.getPlaca().toUpperCase());
 		if(!hayCupo(servicio.getTipoVehiculo())) {
 			return MEMSAJE_SIN_CUPO;
