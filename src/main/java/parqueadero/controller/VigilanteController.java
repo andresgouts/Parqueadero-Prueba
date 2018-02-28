@@ -3,7 +3,6 @@ package parqueadero.controller;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,8 +31,7 @@ public class VigilanteController {
 	private static final String SALIDA_SIN_PLACA = "Debe digitar la placa del vehiculo que desea sacar";
 	private static final String INGRESO_SIN_TIPO_VEHICULO = "Debe seleccionar un tiop de vehiculo";
 	private static final String INGRESO_SIN_CILINDRAJE = "Debe ingresar el cilindraje del vehiculo";
-	@Value("${constantes.tipovehiculo.moto}")
-	private String tipoVehiculoMoto;
+	private static final String TIPO_VEHICULO_MOTO = "M";
 	
 	//Sacar vehiculo
 	@GetMapping("/sacar/{placa}")
@@ -54,7 +52,7 @@ public class VigilanteController {
 		if(servicio.getTipoVehiculo() == null || servicio.getTipoVehiculo().isEmpty()) {
 			return INGRESO_SIN_TIPO_VEHICULO;
 		}
-		if(servicio.getTipoVehiculo().equals(tipoVehiculoMoto) && servicio.getCilindraje()==null) {
+		if(servicio.getTipoVehiculo().equals(TIPO_VEHICULO_MOTO) && servicio.getCilindraje() ==null) {
 			return INGRESO_SIN_CILINDRAJE;
 		}
 		

@@ -35,6 +35,8 @@ public class VigilanteIntegrationTest {
 	ObjectMapper mapper;
 	ServicioDataBuilder servicioDataBuilder;
 	private static final String MEMSAJE_NO_ERROR_FACTURA = "Ocurrio un problema al generar la factura";
+	private static final Integer BAJO_CILINDRAJE = 200;
+	private static final String INGRESO_SIN_CILINDRAJE = "Debe ingresar el cilindraje del vehiculo";
 	
 	@Before
 	public void init() {
@@ -83,7 +85,7 @@ public class VigilanteIntegrationTest {
 	
 	@Test
 	@Sql({"/borrarServicios.sql"})
-	public void ingresarCarro() throws Exception {
+	public void ingresarMotoAltoCilindraje() throws Exception {
 		
 		ServicioEntity servicio = servicioDataBuilder.build();
 		String servicioJson = mapper.writeValueAsString(servicio);
@@ -94,6 +96,54 @@ public class VigilanteIntegrationTest {
 		String respuesta = resultado.getResponse().getContentAsString(); 
 		
 		assertNotEquals(MEMSAJE_NO_ERROR_FACTURA, respuesta);
+		
+	}
+	
+	@Test
+	@Sql({"/borrarServicios.sql"})
+	public void ingresarMotoBajoCilindraje() throws Exception {
+		
+		ServicioEntity servicio = servicioDataBuilder.conCilindraje(BAJO_CILINDRAJE).build();
+		String servicioJson = mapper.writeValueAsString(servicio);
+		MockHttpServletRequestBuilder solicitud = post("/vigilante/ingresar").contentType(MediaType.APPLICATION_JSON_VALUE).
+				content(servicioJson);
+		MvcResult resultado = this.mocMvc.perform(solicitud).andExpect(status().isOk()).andReturn();		
+		
+		String respuesta = resultado.getResponse().getContentAsString(); 
+		
+		assertNotEquals(MEMSAJE_NO_ERROR_FACTURA, respuesta);
+		
+	}
+	
+	@Test
+	@Sql({"/borrarServicios.sql"})
+	public void ingresarMotoSinCilindraje() throws Exception {
+		
+		ServicioEntity servicio = servicioDataBuilder.conCilindraje(null).build();
+		String servicioJson = mapper.writeValueAsString(servicio);
+		MockHttpServletRequestBuilder solicitud = post("/vigilante/ingresar").contentType(MediaType.APPLICATION_JSON_VALUE).
+				content(servicioJson);
+		MvcResult resultado = this.mocMvc.perform(solicitud).andExpect(status().isOk()).andReturn();		
+		
+		String respuesta = resultado.getResponse().getContentAsString(); 
+		
+		assertNotEquals(INGRESO_SIN_CILINDRAJE, respuesta);
+		
+	}
+	
+	@Test
+	@Sql({"/borrarServicios.sql"})
+	public void ingresarCarro() throws Exception {
+		
+		ServicioEntity servicio = servicioDataBuilder.conCilindraje(null).conPlaca("HHP105").conTipoVehiculo("c").build();
+		String servicioJson = mapper.writeValueAsString(servicio);
+		MockHttpServletRequestBuilder solicitud = post("/vigilante/ingresar").contentType(MediaType.APPLICATION_JSON_VALUE).
+				content(servicioJson);
+		MvcResult resultado = this.mocMvc.perform(solicitud).andExpect(status().isOk()).andReturn();		
+		
+		String respuesta = resultado.getResponse().getContentAsString(); 
+		
+		assertNotEquals(INGRESO_SIN_CILINDRAJE, respuesta);
 		
 	}
 
