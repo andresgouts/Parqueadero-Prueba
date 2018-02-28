@@ -199,7 +199,6 @@ public class Vigilante {
 		if(cantidadHoras > 0) {
 			if (cantidadHoras >= 9 && cantidadHoras <= 24) {
 				cantidadDias = cantidadDias + 1L;
-				diferenciaEnMinutos = diferenciaEnMinutos - (cantidadHoras * MINUTOS_DE_UNA_HORA);
 				cantidadHoras = 0L;
 				
 			}else {
