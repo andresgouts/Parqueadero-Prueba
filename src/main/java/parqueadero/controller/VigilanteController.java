@@ -3,6 +3,7 @@ package parqueadero.controller;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,9 +28,19 @@ public class VigilanteController {
 	@Autowired
 	FacturaRepositorio facturaRepositorio;
 	
+	private static final String INGRESO_SIN_PLACA = "Debe digitar la placa del vehiculo que desea ingresar";
+	private static final String SALIDA_SIN_PLACA = "Debe digitar la placa del vehiculo que desea sacar";
+	private static final String INGRESO_SIN_TIPO_VEHICULO = "Debe seleccionar un tiop de vehiculo";
+	private static final String INGRESO_SIN_CILINDRAJE = "Debe ingresar el cilindraje del vehiculo";
+	@Value("${constantes.tipovehiculo.moto}")
+	private String tipoVehiculoMoto;
+	
 	//Sacar vehiculo
 	@GetMapping("/sacar/{placa}")
 	public String consultarTarifa(@PathVariable(value = "placa") String placa) {
+		if (placa == null || placa.isEmpty()) {
+			return SALIDA_SIN_PLACA;
+		}
 		Vigilante vigilante = new Vigilante(this.servicioRepositoro, this.tarifaRepositorio, this.facturaRepositorio);
 		return vigilante.facturarServicio(placa);
 	}
@@ -37,6 +48,16 @@ public class VigilanteController {
 	//Ingresar Vehiculo
 	@PostMapping("/ingresar")
 	public String ingresarVehiculo(@Valid @RequestBody ServicioEntity servicio) {
+		if(servicio.getPlaca() == null || servicio.getPlaca().isEmpty()) {
+			return INGRESO_SIN_PLACA;								
+		}
+		if(servicio.getTipoVehiculo() == null || servicio.getTipoVehiculo().isEmpty()) {
+			return INGRESO_SIN_TIPO_VEHICULO;
+		}
+		if(servicio.getTipoVehiculo().equals(tipoVehiculoMoto) && servicio.getCilindraje()==null) {
+			return INGRESO_SIN_CILINDRAJE;
+		}
+		
 		Vigilante vigilante = new Vigilante(this.servicioRepositoro, this.tarifaRepositorio, this.facturaRepositorio);
 		return vigilante.ingresarVehiculo(servicio);
 	}	

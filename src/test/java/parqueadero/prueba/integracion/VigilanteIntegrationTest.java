@@ -2,9 +2,10 @@ package parqueadero.prueba.integracion;
 
 import static org.junit.Assert.assertNotEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import parqueadero.databuilder.ServicioDataBuilder;
+import parqueadero.entidad.ServicioEntity;
+
 
 
 @SpringBootTest
@@ -26,9 +32,15 @@ public class VigilanteIntegrationTest {
 	
 	@Autowired
 	private MockMvc mocMvc;
-	
+	ObjectMapper mapper;
+	ServicioDataBuilder servicioDataBuilder;
 	private static final String MEMSAJE_NO_ERROR_FACTURA = "Ocurrio un problema al generar la factura";
 	
+	@Before
+	public void init() {
+		mapper = new ObjectMapper();
+		servicioDataBuilder = new ServicioDataBuilder();
+	}
 	
 	@Test
 	@Sql({"/borrarServicios.sql", "/ingresarMotoAltoCilindraje.sql"})
@@ -73,14 +85,10 @@ public class VigilanteIntegrationTest {
 	@Sql({"/borrarServicios.sql"})
 	public void ingresarCarro() throws Exception {
 		
-		MockHttpServletRequestBuilder solicitud = put("/ingresar").contentType(MediaType.APPLICATION_JSON).
-				content({"cilindraje":null,
-					"fechaIngreso":1519392071000,
-					"fechaSalida":null,
-					"idServicio":null,
-					"placa":"HHP105",
-					"tipoVehiculo":"c",
-					"tarifa":null});
+		ServicioEntity servicio = servicioDataBuilder.build();
+		String servicioJson = mapper.writeValueAsString(servicio);
+		MockHttpServletRequestBuilder solicitud = post("/vigilante/ingresar").contentType(MediaType.APPLICATION_JSON_VALUE).
+				content(servicioJson);
 		MvcResult resultado = this.mocMvc.perform(solicitud).andExpect(status().isOk()).andReturn();		
 		
 		String respuesta = resultado.getResponse().getContentAsString(); 
