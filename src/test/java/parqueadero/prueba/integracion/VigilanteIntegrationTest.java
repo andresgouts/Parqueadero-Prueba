@@ -39,6 +39,7 @@ public class VigilanteIntegrationTest {
 	private static final Integer BAJO_CILINDRAJE = 200;
 	private static final String INGRESO_SIN_CILINDRAJE = "Debe ingresar el cilindraje del vehiculo";
 	private static final String MEMSAJE_SIN_CUPO = "No hay cupo disponible para el tipo de vehiculo";
+	private static final String MEMSAJE_SIN_TARIFA = "No existe una tarifa para el tipo de vehiculo";
 	
 	@Before
 	public void init() {
@@ -162,6 +163,22 @@ public class VigilanteIntegrationTest {
 		String respuesta = resultado.getResponse().getContentAsString(); 
 		
 		assertEquals(MEMSAJE_SIN_CUPO, respuesta);
+		
+	}
+	
+	@Test
+	@Sql({"/borrarServicios.sql","/eliminarTarifas.sql"})
+	public void ingresarSinTarifas() throws Exception {
+		
+		ServicioEntity servicio = servicioDataBuilder.conCilindraje(null).conPlaca("HHP105").conTipoVehiculo("c").build();
+		String servicioJson = mapper.writeValueAsString(servicio);
+		MockHttpServletRequestBuilder solicitud = post("/vigilante/ingresar").contentType(MediaType.APPLICATION_JSON_VALUE).
+				content(servicioJson);
+		MvcResult resultado = this.mocMvc.perform(solicitud).andExpect(status().isOk()).andReturn();		
+		
+		String respuesta = resultado.getResponse().getContentAsString(); 
+		
+		assertEquals(MEMSAJE_SIN_TARIFA, respuesta);
 		
 	}
 
