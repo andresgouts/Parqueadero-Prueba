@@ -5,6 +5,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +19,7 @@ import parqueadero.repositorio.ServicioRepositorio;
 import parqueadero.repositorio.TarifaRepositorio;
 
 @RestController
+@CrossOrigin(origins= {"http://localhost:4200"})
 @RequestMapping("/vigilante")
 public class VigilanteController {
 	
@@ -63,8 +65,6 @@ public class VigilanteController {
 	public List<ServicioEntity> consultarVehiculosParqueados() {
 		Vigilante vigilante = new Vigilante(this.servicioRepositoro, this.tarifaRepositorio, this.facturaRepositorio);
 		return vigilante.consultarVehiculosParqueados();
-	}
-	
-	
+	}	
 
 }

@@ -1,5 +1,6 @@
 package parqueadero.entidad;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -9,11 +10,15 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 
 @Entity(name="servicio")
-public class ServicioEntity {
+public class ServicioEntity implements Serializable {
 	
+	private static final long serialVersionUID = 1L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long idServicio;
@@ -29,9 +34,13 @@ public class ServicioEntity {
 	@Column(nullable = false)
 	private Date fechaIngreso;
 	
-	private Date fechaSalida;
+	@Temporal(TemporalType.DATE)
+	private Date fechaSalida;	
+
+	@ManyToOne
+	@JoinColumn(name="idTarifa",referencedColumnName="idTarifa")
+	private TarifaEntity tarifa;
 	
-		
 	
 	public ServicioEntity() {
 	}
@@ -46,10 +55,6 @@ public class ServicioEntity {
 		this.fechaSalida = fechaSalida;
 		this.tarifa = tarifa;
 	}
-
-	@ManyToOne
-	@JoinColumn(name="idTarifa",referencedColumnName="idTarifa")
-	private TarifaEntity tarifa;
 
 	public Long getIdServicio() {
 		return idServicio;
