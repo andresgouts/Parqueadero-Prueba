@@ -100,7 +100,7 @@ public class VigilanteUnityTest {
 	@Test
 	public void conCupoDisponibleCarroTest() {
 		//Arrange
-		ServicioEntity servicio = servicioDataBuilder.conTipoVehiculo("c").build();
+		ServicioEntity servicio = servicioDataBuilder.conTipoVehiculo("carro").build();
 		when(servicioRepositorio.countByFechaSalidaAndTipoVehiculo(null,servicio.getTipoVehiculo())).thenReturn(CAPACIDAD_CARROS - 3L);
 		
 		//Act
@@ -126,7 +126,7 @@ public class VigilanteUnityTest {
 	@Test
 	public void carroConRestriccionPorPlacaTest() {
 		//Arrange
-		ServicioEntity servicio = servicioDataBuilder.conTipoVehiculo("c").conPlaca("AHP105").
+		ServicioEntity servicio = servicioDataBuilder.conTipoVehiculo("carro").conPlaca("AHP105").
 				conFechaIngreso(DIA_CON_RESTRICCION).build();
 		
 		//Act
@@ -139,7 +139,7 @@ public class VigilanteUnityTest {
 	@Test
 	public void carroSinRestriccionPorPlacaTest() {
 		//Arrange
-		ServicioEntity servicio = servicioDataBuilder.conTipoVehiculo("c").conFechaIngreso(DIA_CON_RESTRICCION).build();
+		ServicioEntity servicio = servicioDataBuilder.conTipoVehiculo("carro").conFechaIngreso(DIA_CON_RESTRICCION).build();
 		
 		//Act
 		Boolean restriccion = vigilante.tieneRestriccion(servicio);
@@ -151,7 +151,7 @@ public class VigilanteUnityTest {
 	@Test
 	public void motoSinRestriccionPorPlacaTest() {
 		//Arrange
-		ServicioEntity servicio = servicioDataBuilder.conTipoVehiculo("m").conFechaIngreso(DIA_CON_RESTRICCION).conPlaca("AAA12C").build();
+		ServicioEntity servicio = servicioDataBuilder.conTipoVehiculo("moto").conFechaIngreso(DIA_CON_RESTRICCION).conPlaca("AAA12C").build();
 		
 		//Act
 		Boolean restriccion = vigilante.tieneRestriccion(servicio);

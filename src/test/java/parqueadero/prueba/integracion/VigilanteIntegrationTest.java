@@ -173,7 +173,7 @@ public class VigilanteIntegrationTest {
 	@Sql({"/borrarServicios.sql","/llenarCupos.sql"})
 	public void ingresarCarroSinCupo() throws Exception {
 		
-		ServicioEntity servicio = servicioDataBuilder.conCilindraje(null).conPlaca("HHP105").conTipoVehiculo("c").build();
+		ServicioEntity servicio = servicioDataBuilder.conCilindraje(null).conPlaca("HHP105").conTipoVehiculo("carro").build();
 		String servicioJson = mapper.writeValueAsString(servicio);
 		MockHttpServletRequestBuilder solicitud = post("/vigilante/ingresar").contentType(MediaType.APPLICATION_JSON_VALUE).
 				content(servicioJson);

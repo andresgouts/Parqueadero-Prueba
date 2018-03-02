@@ -23,7 +23,7 @@ public class ServicioDataBuilder {
 		LocalDateTime fechaActual = LocalDateTime.now();
 		this.idServicio = null;
 		this.placa = "zjv11c";
-		this.tipoVehiculo = "m";
+		this.tipoVehiculo = "moto";
 		this.cilindraje = 800;
 		this.fechaIngreso = Date.from(fechaActual.atZone(ZoneId.systemDefault()).toInstant());
 		this.fechaSalida = null;

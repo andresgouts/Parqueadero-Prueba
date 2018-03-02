@@ -34,8 +34,8 @@ public class Vigilante {
 	private static final Double VALOR_COBRO_EXTRA = 2000D;
 	private static final Long MINUTOS_DE_UNA_HORA = 60L;
 	private static final Long MINUTOS_DEL_DIA = 1440L;
-	private static final String TIPO_VEHIUCLO_CARRO = "c";
-	private static final String TIPO_VEHICULO_MOTO = "m";
+	private static final String TIPO_VEHIUCLO_CARRO = "carro";
+	private static final String TIPO_VEHICULO_MOTO = "moto";
 	
 	@Autowired
 	ServicioRepositorio servicioRepositorio;
